@@ -25,6 +25,10 @@
     }
   }
 
+  &__arrow-icon {
+    user-select: none;
+  }
+
   &__options-container {
     display: inline;
     position: absolute;
@@ -45,6 +49,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    user-select: none;
   }
 
   &__option {

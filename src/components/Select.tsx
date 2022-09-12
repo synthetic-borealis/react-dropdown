@@ -92,7 +92,7 @@ export default function Select({
         onKeyDown={handleHeaderKeyDown}
       >
         <span>{options[selectedOption]}</span>
-        <span>{isOpen ? '↑' : '↓'}</span>
+        <span className="Select__arrow-icon">{isOpen ? '↑' : '↓'}</span>
       </button>
       {isOpen ? (
         <div className="Select__options-container">
