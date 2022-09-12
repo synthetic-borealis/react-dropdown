@@ -6,6 +6,7 @@ interface ISelectProps {
   defaultSelectedIndex?: number;
   onSelectOption?: (index: number) => void;
   disabled?: boolean;
+  name?: string;
 }
 
 export default function Select({
@@ -13,6 +14,7 @@ export default function Select({
   defaultSelectedIndex,
   onSelectOption,
   disabled,
+  name,
 }: ISelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -99,6 +101,7 @@ export default function Select({
             className="Select__options"
             aria-activedescendant={options[selectedOption]}
             aria-expanded={isOpen}
+            aria-label={name as string}
             tabIndex={-1}
           >
             {options.map((option, index) => (
@@ -128,4 +131,5 @@ Select.defaultProps = {
   defaultSelectedIndex: 0,
   onSelectOption: undefined,
   disabled: false,
+  name: 'select-component',
 };
