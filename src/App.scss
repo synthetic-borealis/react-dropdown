@@ -32,7 +32,12 @@
     background-color: #fafafe;
     border-radius: 10px;
     border: 0;
-    outline: 1px solid gray;
+    outline: 1px solid darkturquoise;
     cursor: pointer;
+    transition: outline-color 0.3s ease-in-out;
+
+    &:hover {
+      outline-color: darkcyan;
+    }
   }
 }
