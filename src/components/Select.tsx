@@ -5,9 +5,15 @@ interface ISelectProps {
   options: string[];
   defaultSelectedIndex?: number;
   onSelectOption?: (index: number) => void;
+  disabled?: boolean;
 }
 
-export default function Select({ options, defaultSelectedIndex, onSelectOption }: ISelectProps) {
+export default function Select({
+  options,
+  defaultSelectedIndex,
+  onSelectOption,
+  disabled,
+}: ISelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number>(defaultSelectedIndex as number);
@@ -71,7 +77,11 @@ export default function Select({ options, defaultSelectedIndex, onSelectOption }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div className="Select" ref={rootRef}>
+    <div
+      className={`Select${disabled ? ' Select_disabled' : ''}`}
+      ref={rootRef}
+      aria-disabled={disabled}
+    >
       <button
         type="button"
         className="Select__header"
@@ -79,12 +89,10 @@ export default function Select({ options, defaultSelectedIndex, onSelectOption }
         onClick={handleClick}
         onKeyDown={handleHeaderKeyDown}
       >
-        <span>
-          {options[selectedOption]}
-        </span>
+        <span>{options[selectedOption]}</span>
         <span>{isOpen ? '↑' : '↓'}</span>
       </button>
-      {isOpen ?
+      {isOpen ? (
         <div className="Select__options-container">
           <ul
             role="listbox"
@@ -109,8 +117,9 @@ export default function Select({ options, defaultSelectedIndex, onSelectOption }
             ))}
           </ul>
         </div>
-        : ''
-      }
+      ) : (
+        ''
+      )}
     </div>
   );
 }
@@ -118,4 +127,5 @@ export default function Select({ options, defaultSelectedIndex, onSelectOption }
 Select.defaultProps = {
   defaultSelectedIndex: 0,
   onSelectOption: undefined,
+  disabled: false,
 };
