@@ -12,7 +12,7 @@
     outline: 1px solid darkturquoise;
     font-size: 1rem;
     line-height: 1.5em;
-    font-weight: 700;
+    font-weight: 500;
     padding: 0.25em 0.5em;
     justify-content: space-between;
     background-color: #fafafe;
@@ -32,7 +32,7 @@
   &__options-container {
     display: inline;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.25rem);
     border-radius: 10px;
     min-width: 100%;
     min-height: 100%;
@@ -71,14 +71,17 @@
       border-bottom-left-radius: 10px;
     }
 
-    &:focus {
-      outline: 1px solid darkcyan;
+    &[aria-selected='true'] {
+      font-weight: 500;
     }
 
     &[aria-selected='true'],
-    &:hover,
+    &:hover {
+      background-color: paleturquoise;
+    }
+
     &:focus {
-      background-color: cyan;
+      background-color: lavender;
     }
   }
 
