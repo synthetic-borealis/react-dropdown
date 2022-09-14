@@ -23,9 +23,7 @@ export default function Select({
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number>(defaultSelectedIndex as number);
-  // TODO: uncomment this once auto scrolling to selected item is implemented
-  // const showScrollbar = options.length > (displayedItems as number);
-  const showScrollbar = false;
+  const showScrollbar = options.length > (displayedItems as number);
 
   function handleClick() {
     setIsOpen(!isOpen);
@@ -103,8 +101,7 @@ export default function Select({
       const maxHeight = itemHeight * actualDisplayedItems;
       contentRef.current.style.maxHeight = `${maxHeight}px`;
 
-      // TODO: change this to showScrollbar
-      if (options.length > (displayedItems as number)) {
+      if (showScrollbar) {
         const { scrollTop: contentTop, scrollHeight: contentHeight } = contentRef.current;
         const contentBottom = contentTop + itemHeight * (displayedItems as number);
 
