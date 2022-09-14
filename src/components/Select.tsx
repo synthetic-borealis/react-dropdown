@@ -167,6 +167,7 @@ export default function Select({
           {showScrollbar ? (
             <div className="Select__scrollbar">
               <div className="Select__scrollbar-track" />
+              <div className="Select__scrollbar-thumb" />
             </div>
           ) : (
             ''
