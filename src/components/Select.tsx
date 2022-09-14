@@ -142,6 +142,49 @@ export default function Select({
     [thumbHeight],
   );
 
+  const handleThumbPointerDown = useCallback((evt: React.PointerEvent<HTMLDivElement>) => {
+    if (!(evt.pointerType === 'mouse' && evt.button !== 0)) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setScrollStartPosition(evt.clientY);
+      if (contentRef.current) {
+        setInitialScrollTop(contentRef.current.scrollTop);
+      }
+      setIsDraggingThumb(true);
+    }
+  }, []);
+
+  const handleThumbPointerUpOrLeave = useCallback(
+    (evt: React.PointerEvent<HTMLDivElement>) => {
+      if (!(evt.pointerType === 'mouse' && evt.button !== 0)) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (isDraggingThumb) {
+          setIsDraggingThumb(false);
+        }
+      }
+    },
+    [isDraggingThumb],
+  );
+
+  const handleThumbPointerMove = useCallback(
+    (evt: React.PointerEvent<HTMLDivElement>) => {
+      if (isDraggingThumb && contentRef.current) {
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        const { scrollHeight: contentScrollHeight, offsetHeight: contentOffsetHeight } =
+          contentRef.current;
+        const deltaY = (evt.clientY - scrollStartPosition) * (contentOffsetHeight / thumbHeight);
+        contentRef.current.scrollTop = Math.min(
+          initialScrollTop + deltaY,
+          contentScrollHeight - contentOffsetHeight,
+        );
+      }
+    },
+    [initialScrollTop, isDraggingThumb, scrollStartPosition, thumbHeight],
+  );
+
   useEffect(() => {
     function handleClickOutside(evt: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(evt.target as Node)) {
@@ -211,7 +254,13 @@ export default function Select({
         <div className={`Select__arrow-icon${isOpen ? ' Select__arrow-icon_inverted' : ''}`} />
       </button>
       {isOpen ? (
-        <div className="Select__options-wrapper" onWheel={handleWheel}>
+        <div
+          className="Select__options-wrapper"
+          onWheel={handleWheel}
+          onPointerUp={handleThumbPointerUpOrLeave}
+          onPointerLeave={handleThumbPointerUpOrLeave}
+          onPointerMove={handleThumbPointerMove}
+        >
           <div
             className="Select__options-container"
             ref={contentRef}
@@ -242,7 +291,7 @@ export default function Select({
             </ul>
           </div>
           {showScrollbar ? (
-            <div className="Select__scrollbar">
+            <div className="Select__scrollbar" aria-valuenow={currentScrollPosition}>
               <div
                 className="Select__scrollbar-track"
                 ref={trackRef}
@@ -252,6 +301,7 @@ export default function Select({
               <div
                 className="Select__scrollbar-thumb"
                 ref={thumbRef}
+                onPointerDown={handleThumbPointerDown}
                 style={{
                   height: `${thumbHeight}px`,
                   cursor: isDraggingThumb ? 'grabbing' : 'grab',
