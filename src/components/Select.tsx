@@ -119,6 +119,29 @@ export default function Select({
     thumb.style.top = `${newTop}px`;
   }, [thumbHeight]);
 
+  const handleTrackClick = useCallback(
+    (evt: React.PointerEvent<HTMLDivElement>) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      const [{ current: trackCurrent }, { current: contentCurrent }] = [trackRef, contentRef];
+
+      if (trackCurrent && contentCurrent) {
+        const { clientY } = evt;
+        const target = evt.target as HTMLDivElement;
+        const rect = target.getBoundingClientRect();
+        const trackTop = rect.top;
+        const thumbOffset = -(thumbHeight / 2);
+        const clickRatio = (clientY - trackTop + thumbOffset) / trackCurrent.clientHeight;
+        const scrollAmount = Math.floor(clickRatio * contentCurrent.scrollHeight);
+        contentCurrent.scrollTo({
+          top: scrollAmount,
+          behavior: 'smooth',
+        });
+      }
+    },
+    [thumbHeight],
+  );
+
   useEffect(() => {
     function handleClickOutside(evt: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(evt.target as Node)) {
@@ -220,7 +243,12 @@ export default function Select({
           </div>
           {showScrollbar ? (
             <div className="Select__scrollbar">
-              <div className="Select__scrollbar-track" ref={trackRef} />
+              <div
+                className="Select__scrollbar-track"
+                ref={trackRef}
+                onClick={handleTrackClick}
+                role="none"
+              />
               <div
                 className="Select__scrollbar-thumb"
                 ref={thumbRef}
