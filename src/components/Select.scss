@@ -40,8 +40,7 @@
     }
   }
 
-  &__options-container {
-    display: inline;
+  &__options-wrapper {
     position: absolute;
     top: calc(100% + 0.25rem);
     border-radius: 10px;
@@ -49,13 +48,60 @@
     min-height: 100%;
     left: 0;
     border: 1px solid darkturquoise;
-    background-color: lightcyan;
+    background-color: #fafafe;
     padding: 0;
+    overflow: hidden;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  &__scrollbar {
+    position: relative;
+    display: block;
+    width: 1rem;
+    height: 100%;
+    border-radius: inherit;
+
+    &-track {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background-color: lightgrey;
+      border: 1px solid darkgrey;
+      cursor: pointer;
+    }
+
+    &-thumb {
+      position: absolute;
+      width: 100%;
+      min-height: 20px;
+      top: 0;
+      border-radius: 10px;
+      background-color: darkcyan;
+      border: 1px solid darkgreen;
+    }
+  }
+
+  &__options-container {
+    position: relative;
+    padding: 0;
+    overflow: auto;
+
+    //noinspection CssUnknownProperty
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   &__options {
     display: block;
-    box-sizing: content-box;
     flex-direction: column;
     list-style: none;
     padding: 0;
@@ -70,17 +116,8 @@
     line-height: 1.5em;
     padding: 0.25em 0.5em;
     cursor: pointer;
+    outline: none;
     border: 0;
-
-    &:first-of-type {
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-
-    &:last-of-type {
-      border-bottom-right-radius: 10px;
-      border-bottom-left-radius: 10px;
-    }
 
     &[aria-selected='true'] {
       font-weight: 500;
@@ -93,6 +130,9 @@
 
     &:focus {
       background-color: lavender;
+      -moz-box-shadow: inset 0 0 2px darkcyan;
+      -webkit-box-shadow: inset 0 0 2px darkcyan;
+      box-shadow: inset 0 0 2px darkcyan;
     }
   }
 
