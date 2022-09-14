@@ -23,7 +23,9 @@ export default function Select({
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number>(defaultSelectedIndex as number);
-  const showScrollbar = options.length > (displayedItems as number);
+  // TODO: uncomment this once auto scrolling to selected item is implemented
+  // const showScrollbar = options.length > (displayedItems as number);
+  const showScrollbar = false;
 
   function handleClick() {
     setIsOpen(!isOpen);
@@ -100,6 +102,24 @@ export default function Select({
       const actualDisplayedItems = Math.min(displayedItems as number, options.length);
       const maxHeight = itemHeight * actualDisplayedItems;
       contentRef.current.style.maxHeight = `${maxHeight}px`;
+
+      // TODO: change this to showScrollbar
+      if (options.length > (displayedItems as number)) {
+        const { scrollTop: contentTop, scrollHeight: contentHeight } = contentRef.current;
+        const contentBottom = contentTop + itemHeight * (displayedItems as number);
+
+        // Is the selected item not in view?
+        if (selectedOption * itemHeight + 1 > contentBottom) {
+          const newTop = Math.max(
+            Math.min(
+              (selectedOption - ((displayedItems as number) - 1)) * itemHeight,
+              contentHeight - itemHeight,
+            ),
+            0,
+          );
+          contentRef.current.scrollTo({ top: newTop });
+        }
+      }
     }
   });
 
