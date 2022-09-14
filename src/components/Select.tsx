@@ -96,9 +96,8 @@ export default function Select({
   useEffect(() => {
     if (headerRef.current && contentRef.current && isOpen) {
       const { clientHeight: itemHeight } = headerRef.current;
-      const borderSizeContribution = 2;
       const actualDisplayedItems = Math.min(displayedItems as number, options.length);
-      const maxHeight = itemHeight * actualDisplayedItems + borderSizeContribution;
+      const maxHeight = itemHeight * actualDisplayedItems;
       contentRef.current.style.maxHeight = `${maxHeight}px`;
     }
   });
@@ -121,30 +120,35 @@ export default function Select({
         <div className={`Select__arrow-icon${isOpen ? ' Select__arrow-icon_inverted' : ''}`} />
       </button>
       {isOpen ? (
-        <div className="Select__options-container" ref={contentRef}>
-          <ul
-            role="listbox"
-            className="Select__options"
-            aria-activedescendant={options[selectedOption]}
-            aria-expanded={isOpen}
-            aria-label={name as string}
-            tabIndex={-1}
-          >
-            {options.map((option, index) => (
-              <li
-                className="Select__option"
-                id={option}
-                key={option}
-                role="option"
-                aria-selected={selectedOption === index}
-                tabIndex={0}
-                onKeyDown={handleKeyDown(index)}
-                onClick={() => selectOptionAndClose(index)}
-              >
-                {option}
-              </li>
-            ))}
-          </ul>
+        <div className="Select__options-wrapper">
+          <div className="Select__options-container" ref={contentRef}>
+            <ul
+              role="listbox"
+              className="Select__options"
+              aria-activedescendant={options[selectedOption]}
+              aria-expanded={isOpen}
+              aria-label={name as string}
+              tabIndex={-1}
+            >
+              {options.map((option, index) => (
+                <li
+                  className="Select__option"
+                  id={option}
+                  key={option}
+                  role="option"
+                  aria-selected={selectedOption === index}
+                  tabIndex={0}
+                  onKeyDown={handleKeyDown(index)}
+                  onClick={() => selectOptionAndClose(index)}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="Select__scrollbar">
+            <div className="Select__scrollbar-track" />
+          </div>
         </div>
       ) : (
         ''
