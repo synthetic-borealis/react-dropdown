@@ -15,6 +15,7 @@
     font-weight: 500;
     padding: 0.25em 0.5em;
     justify-content: space-between;
+    align-items: center;
     background-color: #fafafe;
     border-radius: 10px;
     cursor: pointer;
@@ -27,6 +28,16 @@
 
   &__arrow-icon {
     user-select: none;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0.5rem 0.5rem 0 0.5rem;
+    border-color: #222222 transparent transparent transparent;
+    transform: rotate(360deg);
+
+    &_inverted {
+      transform: rotate(180deg);
+    }
   }
 
   &__options-container {

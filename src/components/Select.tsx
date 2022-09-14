@@ -35,6 +35,11 @@ export default function Select({
 
   function handleKeyDown(index: number) {
     return (evt: React.KeyboardEvent<HTMLElement>) => {
+      if (disabled) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        return;
+      }
       switch (evt.key) {
         case ' ':
         case 'SpaceBar':
@@ -49,6 +54,11 @@ export default function Select({
   }
 
   function handleHeaderKeyDown(evt: React.KeyboardEvent<HTMLButtonElement>) {
+    if (disabled) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      return;
+    }
     switch (evt.key) {
       case 'ArrowUp':
         evt.preventDefault();
@@ -92,7 +102,7 @@ export default function Select({
         onKeyDown={handleHeaderKeyDown}
       >
         <span>{options[selectedOption]}</span>
-        <span className="Select__arrow-icon">{isOpen ? '↑' : '↓'}</span>
+        <div className={`Select__arrow-icon${isOpen ? ' Select__arrow-icon_inverted' : ''}`} />
       </button>
       {isOpen ? (
         <div className="Select__options-container">
