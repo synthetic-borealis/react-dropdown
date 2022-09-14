@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './Select.scss';
 
 interface ISelectProps {
@@ -21,11 +21,19 @@ export default function Select({
   const rootRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
+  const observer = useRef<ResizeObserver | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number>(defaultSelectedIndex as number);
+  const [thumbHeight, setThumbHeight] = useState<number>(20);
+  const [isDraggingThumb, setIsDraggingThumb] = useState<boolean>(false);
+  const [scrollStartPosition, setScrollStartPosition] = useState<number>(0);
+  const [initialScrollTop, setInitialScrollTop] = useState<number>(0);
+  const [currentScrollPosition, setCurrentScrollPosition] = useState<number>(0);
   const showScrollbar = options.length > (displayedItems as number);
 
-  function handleClick() {
+  function handleHeaderClick() {
     setIsOpen(!isOpen);
   }
 
@@ -82,6 +90,35 @@ export default function Select({
     }
   }
 
+  function handleContentResize(ref: HTMLDivElement, trackSize: number) {
+    const { clientHeight, scrollHeight } = ref;
+    setThumbHeight(Math.max((clientHeight / scrollHeight) * trackSize, 20));
+  }
+
+  function handleWheel(evt: React.WheelEvent) {
+    evt.stopPropagation();
+    if (contentRef.current) {
+      contentRef.current.scrollBy({
+        top: evt.deltaY,
+        behavior: 'smooth',
+      });
+    }
+  }
+
+  const handleThumbPosition = useCallback(() => {
+    if (!contentRef.current || !thumbRef.current || !trackRef.current) {
+      return;
+    }
+    const { scrollTop: contentTop, scrollHeight: contentHeight } = contentRef.current;
+    const { clientHeight: trackHeight } = trackRef.current;
+    const newTop = Math.min((contentTop / contentHeight) * trackHeight, trackHeight - thumbHeight);
+    const thumb = thumbRef.current;
+    const newThumbPosition = (thumb.offsetTop / Math.floor(trackHeight - thumbHeight)) * 100;
+    setCurrentScrollPosition(newThumbPosition);
+
+    thumb.style.top = `${newTop}px`;
+  }, [thumbHeight]);
+
   useEffect(() => {
     function handleClickOutside(evt: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(evt.target as Node)) {
@@ -95,30 +132,43 @@ export default function Select({
   }, []);
 
   useEffect(() => {
-    if (headerRef.current && contentRef.current && isOpen) {
+    if (headerRef.current && contentRef.current && trackRef.current && isOpen && showScrollbar) {
+      // Set the viewport height
       const { clientHeight: itemHeight } = headerRef.current;
       const actualDisplayedItems = Math.min(displayedItems as number, options.length);
       const maxHeight = itemHeight * actualDisplayedItems;
       contentRef.current.style.maxHeight = `${maxHeight}px`;
 
-      if (showScrollbar) {
-        const { scrollTop: contentTop, scrollHeight: contentHeight } = contentRef.current;
-        const contentBottom = contentTop + itemHeight * (displayedItems as number);
+      // Scroll until the selected option is in view
+      const { scrollTop: contentTop, scrollHeight: contentHeight } = contentRef.current;
+      const contentBottom = contentTop + itemHeight * (displayedItems as number);
 
-        // Is the selected item not in view?
-        if (selectedOption * itemHeight + 1 > contentBottom) {
-          const newTop = Math.max(
-            Math.min(
-              (selectedOption - ((displayedItems as number) - 1)) * itemHeight,
-              contentHeight - itemHeight,
-            ),
-            0,
-          );
-          contentRef.current.scrollTo({ top: newTop });
-        }
+      // Is the selected item not in view?
+      if (selectedOption * itemHeight + 1 > contentBottom) {
+        const newTop = Math.max(
+          Math.min(
+            (selectedOption - ((displayedItems as number) - 1)) * itemHeight,
+            contentHeight - itemHeight,
+          ),
+          0,
+        );
+        contentRef.current.scrollTo({ top: newTop });
       }
+
+      // Set the thumb height
+      const ref = contentRef.current;
+      const { clientHeight: trackSize } = trackRef.current;
+      observer.current = new ResizeObserver(() => {
+        handleContentResize(ref, trackSize);
+      });
+      observer.current?.observe(ref);
+
+      return () => {
+        observer.current?.unobserve(ref);
+      };
     }
-  });
+    return () => {};
+  }, [isOpen, displayedItems, options, selectedOption, showScrollbar]);
 
   return (
     <div
@@ -131,15 +181,19 @@ export default function Select({
         className="Select__header"
         ref={headerRef}
         aria-haspopup="listbox"
-        onClick={handleClick}
+        onClick={handleHeaderClick}
         onKeyDown={handleHeaderKeyDown}
       >
         <span>{options[selectedOption]}</span>
         <div className={`Select__arrow-icon${isOpen ? ' Select__arrow-icon_inverted' : ''}`} />
       </button>
       {isOpen ? (
-        <div className="Select__options-wrapper">
-          <div className="Select__options-container" ref={contentRef}>
+        <div className="Select__options-wrapper" onWheel={handleWheel}>
+          <div
+            className="Select__options-container"
+            ref={contentRef}
+            onScroll={handleThumbPosition}
+          >
             <ul
               role="listbox"
               className="Select__options"
@@ -166,8 +220,15 @@ export default function Select({
           </div>
           {showScrollbar ? (
             <div className="Select__scrollbar">
-              <div className="Select__scrollbar-track" />
-              <div className="Select__scrollbar-thumb" />
+              <div className="Select__scrollbar-track" ref={trackRef} />
+              <div
+                className="Select__scrollbar-thumb"
+                ref={thumbRef}
+                style={{
+                  height: `${thumbHeight}px`,
+                  cursor: isDraggingThumb ? 'grabbing' : 'grab',
+                }}
+              />
             </div>
           ) : (
             ''

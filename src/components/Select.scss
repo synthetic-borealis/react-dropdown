@@ -91,6 +91,8 @@
     position: relative;
     padding: 0;
     overflow: auto;
+
+    //noinspection CssUnknownProperty
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
