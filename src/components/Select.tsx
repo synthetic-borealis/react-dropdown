@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { nanoid } from 'nanoid';
 import './Select.scss';
 
 interface ISelectProps {
@@ -31,6 +32,7 @@ export default function Select({
   const [scrollStartPosition, setScrollStartPosition] = useState<number>(0);
   const [initialScrollTop, setInitialScrollTop] = useState<number>(0);
   const [currentScrollPosition, setCurrentScrollPosition] = useState<number>(0);
+  const [viewportID] = useState<string>(nanoid());
   const showScrollbar = options.length > (displayedItems as number);
 
   function handleHeaderClick() {
@@ -269,6 +271,7 @@ export default function Select({
             <ul
               role="listbox"
               className="Select__options"
+              id={viewportID}
               aria-activedescendant={options[selectedOption]}
               aria-expanded={isOpen}
               aria-label={name as string}
@@ -291,7 +294,13 @@ export default function Select({
             </ul>
           </div>
           {showScrollbar ? (
-            <div className="Select__scrollbar" aria-valuenow={currentScrollPosition}>
+            <div
+              className="Select__scrollbar"
+              role="scrollbar"
+              aria-controls={viewportID}
+              aria-valuenow={currentScrollPosition}
+              aria-orientation="vertical"
+            >
               <div
                 className="Select__scrollbar-track"
                 ref={trackRef}
