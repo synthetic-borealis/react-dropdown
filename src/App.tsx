@@ -3,7 +3,7 @@ import './App.scss';
 
 import Select from './components/Select';
 
-const selectOptions = ['C++', 'Rust', 'Python', 'JavaScript'];
+const selectOptions = ['C++', 'Rust', 'Python', 'JavaScript', 'C#'];
 
 function App() {
   const [selectionIndex, setSelectionIndex] = useState<number>(0);

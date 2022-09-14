@@ -7,6 +7,7 @@ interface ISelectProps {
   onSelectOption?: (index: number) => void;
   disabled?: boolean;
   name?: string;
+  displayedItems?: number;
 }
 
 export default function Select({
@@ -15,8 +16,11 @@ export default function Select({
   onSelectOption,
   disabled,
   name,
+  displayedItems,
 }: ISelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number>(defaultSelectedIndex as number);
 
@@ -88,6 +92,17 @@ export default function Select({
     return () => document.removeEventListener('click', handleClickOutside);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (headerRef.current && contentRef.current && isOpen) {
+      const { clientHeight: itemHeight } = headerRef.current;
+      const borderSizeContribution = 2;
+      const actualDisplayedItems = Math.min(displayedItems as number, options.length);
+      const maxHeight = itemHeight * actualDisplayedItems + borderSizeContribution;
+      contentRef.current.style.maxHeight = `${maxHeight}px`;
+    }
+  });
+
   return (
     <div
       className={`Select${disabled ? ' Select_disabled' : ''}`}
@@ -97,6 +112,7 @@ export default function Select({
       <button
         type="button"
         className="Select__header"
+        ref={headerRef}
         aria-haspopup="listbox"
         onClick={handleClick}
         onKeyDown={handleHeaderKeyDown}
@@ -105,7 +121,7 @@ export default function Select({
         <div className={`Select__arrow-icon${isOpen ? ' Select__arrow-icon_inverted' : ''}`} />
       </button>
       {isOpen ? (
-        <div className="Select__options-container">
+        <div className="Select__options-container" ref={contentRef}>
           <ul
             role="listbox"
             className="Select__options"
@@ -142,4 +158,5 @@ Select.defaultProps = {
   onSelectOption: undefined,
   disabled: false,
   name: 'select-component',
+  displayedItems: 4,
 };
