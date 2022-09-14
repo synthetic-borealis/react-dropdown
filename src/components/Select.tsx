@@ -23,6 +23,7 @@ export default function Select({
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number>(defaultSelectedIndex as number);
+  const showScrollbar = options.length > (displayedItems as number);
 
   function handleClick() {
     setIsOpen(!isOpen);
@@ -146,9 +147,13 @@ export default function Select({
               ))}
             </ul>
           </div>
-          <div className="Select__scrollbar">
-            <div className="Select__scrollbar-track" />
-          </div>
+          {showScrollbar ? (
+            <div className="Select__scrollbar">
+              <div className="Select__scrollbar-track" />
+            </div>
+          ) : (
+            ''
+          )}
         </div>
       ) : (
         ''
