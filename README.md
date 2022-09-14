@@ -1,2 +1,2 @@
-# Select component for React
+# Dropdown Component for React
 
