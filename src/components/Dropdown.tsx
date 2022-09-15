@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { nanoid } from 'nanoid';
-import './Select.scss';
+import './Dropdown.scss';
 
-interface ISelectProps {
+interface IDropdownProps {
   options: string[];
   defaultSelectedIndex?: number;
   onSelectOption?: (index: number) => void;
@@ -11,14 +11,14 @@ interface ISelectProps {
   displayedItems?: number;
 }
 
-export default function Select({
+export default function Dropdown({
   options,
   defaultSelectedIndex,
   onSelectOption,
   disabled,
   name,
   displayedItems,
-}: ISelectProps) {
+}: IDropdownProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -240,37 +240,37 @@ export default function Select({
 
   return (
     <div
-      className={`Select${disabled ? ' Select_disabled' : ''}`}
+      className={`Dropdown${disabled ? ' Dropdown_disabled' : ''}`}
       ref={rootRef}
       aria-disabled={disabled}
     >
       <button
         type="button"
-        className="Select__header"
+        className="Dropdown__header"
         ref={headerRef}
         aria-haspopup="listbox"
         onClick={handleHeaderClick}
         onKeyDown={handleHeaderKeyDown}
       >
         <span>{options[selectedOption]}</span>
-        <div className={`Select__arrow-icon${isOpen ? ' Select__arrow-icon_inverted' : ''}`} />
+        <div className={`Dropdown__arrow-icon${isOpen ? ' Dropdown__arrow-icon_inverted' : ''}`} />
       </button>
       {isOpen ? (
         <div
-          className="Select__options-wrapper"
+          className="Dropdown__options-wrapper"
           onWheel={handleWheel}
           onPointerUp={handleThumbPointerUpOrLeave}
           onPointerLeave={handleThumbPointerUpOrLeave}
           onPointerMove={handleThumbPointerMove}
         >
           <div
-            className="Select__options-container"
+            className="Dropdown__options-container"
             ref={contentRef}
             onScroll={handleThumbPosition}
           >
             <ul
               role="listbox"
-              className="Select__options"
+              className="Dropdown__options"
               id={viewportID}
               aria-activedescendant={options[selectedOption]}
               aria-expanded={isOpen}
@@ -279,7 +279,7 @@ export default function Select({
             >
               {options.map((option, index) => (
                 <li
-                  className="Select__option"
+                  className="Dropdown__option"
                   id={option}
                   key={option}
                   role="option"
@@ -295,20 +295,20 @@ export default function Select({
           </div>
           {showScrollbar ? (
             <div
-              className="Select__scrollbar"
+              className="Dropdown__scrollbar"
               role="scrollbar"
               aria-controls={viewportID}
               aria-valuenow={currentScrollPosition}
               aria-orientation="vertical"
             >
               <div
-                className="Select__scrollbar-track"
+                className="Dropdown__scrollbar-track"
                 ref={trackRef}
                 onClick={handleTrackClick}
                 role="none"
               />
               <div
-                className="Select__scrollbar-thumb"
+                className="Dropdown__scrollbar-thumb"
                 ref={thumbRef}
                 onPointerDown={handleThumbPointerDown}
                 style={{
@@ -328,7 +328,7 @@ export default function Select({
   );
 }
 
-Select.defaultProps = {
+Dropdown.defaultProps = {
   defaultSelectedIndex: 0,
   onSelectOption: undefined,
   disabled: false,

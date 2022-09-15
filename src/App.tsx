@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.scss';
 
-import Select from './components/Select';
+import Dropdown from './components/Dropdown';
 
 const selectOptions = ['C++', 'Rust', 'Python', 'JavaScript', 'C#'];
 
@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <div className="App__container">
         <h1 className="App__title">React Select Component</h1>
-        <Select
+        <Dropdown
           options={selectOptions}
           onSelectOption={setSelectionIndex}
           disabled={selectDisabled}
