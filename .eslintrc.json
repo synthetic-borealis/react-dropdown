@@ -11,7 +11,16 @@
     "plugin:jest/recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "overrides": [],
+  "overrides": [
+    {
+      "files": ["src/**/*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": ["warn", {
+          "varsIgnorePattern": "React"
+        }]
+      }
+    }
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
