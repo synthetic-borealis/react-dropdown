@@ -1,4 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { nanoid } from 'nanoid';
 import './Dropdown.scss';
 
@@ -174,9 +179,10 @@ export default function Dropdown({
       if (isDraggingThumb && contentRef.current) {
         evt.preventDefault();
         evt.stopPropagation();
-
-        const { scrollHeight: contentScrollHeight, offsetHeight: contentOffsetHeight } =
-          contentRef.current;
+        const {
+          scrollHeight: contentScrollHeight,
+          offsetHeight: contentOffsetHeight,
+        } = contentRef.current;
         const deltaY = (evt.clientY - scrollStartPosition) * (contentOffsetHeight / thumbHeight);
         contentRef.current.scrollTop = Math.min(
           initialScrollTop + deltaY,

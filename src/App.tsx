@@ -17,7 +17,11 @@ function App() {
           onSelectOption={setSelectionIndex}
           disabled={selectDisabled}
         />
-        <p className="App__caption">{selectOptions[selectionIndex]} is selected.</p>
+        <p className="App__caption">
+          {selectOptions[selectionIndex]}
+          {' '}
+          is selected.
+        </p>
         <button
           className="App__button"
           type="button"
